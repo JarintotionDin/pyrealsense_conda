@@ -83,7 +83,7 @@ finally:
     # Stop streaming
     pipeline.stop()
 ```
-For more information on the library, please follow our [examples](./examples), and read the [documentation](./doc) to learn more.
+For more information on the library, please follow our [examples](./wrappers/python/examples), and read the [documentation](./doc) to learn more.
 
 ## Contributing
 In order to contribute to Intel RealSense SDK, please follow our [contribution guidelines](CONTRIBUTING.md).
