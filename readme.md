@@ -18,9 +18,11 @@ Information about the Intel® RealSense™ technology at [www.intelrealsense.com
 ## Building librealsense - Using conda
 
 You can download and install librealsense and pylibrealsense in conda with:
-	sudo apt-get install libusb-1.0-0-dev pkg-config libgtk-3-dev
-	sudo apt-get install libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev
-	python setup.py
+```shell
+        sudo apt-get install libusb-1.0-0-dev pkg-config libgtk-3-dev
+        sudo apt-get install libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev
+        python setup.py
+```
 
 ## What’s included in the SDK:
 | What | Description | Download link|
