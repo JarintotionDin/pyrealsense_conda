@@ -37,33 +37,51 @@ You can download and install librealsense and pylibrealsense in conda with:
 ## Ready to Hack!
 
 Our library offers a high level API for using Intel RealSense depth cameras (in addition to lower level ones).
-The following snippet shows how to start streaming frames and extracting the depth value of a pixel:
+The following snippet shows how to start streaming frames with BGR-D imformation, before you run please confirm that you hava already install opencv-python.
 
-```cpp
-// Create a Pipeline - this serves as a top-level API for streaming and processing frames
-rs2::pipeline p;
+```python
+import pyrealsense2 as rs
+import numpy as np
+import cv2
 
-// Configure and start the pipeline
-p.start();
+# Configure depth and color streams
+pipeline = rs.pipeline()
+config = rs.config()
+config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
+config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
 
-while (true)
-{
-    // Block program until frames arrive
-    rs2::frameset frames = p.wait_for_frames();
+# Start streaming
+pipeline.start(config)
 
-    // Try to get a frame of a depth image
-    rs2::depth_frame depth = frames.get_depth_frame();
+try:
+    while True:
 
-    // Get the depth frame's dimensions
-    float width = depth.get_width();
-    float height = depth.get_height();
+        # Wait for a coherent pair of frames: depth and color
+        frames = pipeline.wait_for_frames()
+        depth_frame = frames.get_depth_frame()
+        color_frame = frames.get_color_frame()
+        if not depth_frame or not color_frame:
+            continue
 
-    // Query the distance from the camera to the object in the center of the image
-    float dist_to_center = depth.get_distance(width / 2, height / 2);
+        # Convert images to numpy arrays
+        depth_image = np.asanyarray(depth_frame.get_data())
+        color_image = np.asanyarray(color_frame.get_data())
 
-    // Print the distance
-    std::cout << "The camera is facing an object " << dist_to_center << " meters away \r";
-}
+        # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
+        depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
+
+        # Stack both images horizontally
+        images = np.hstack((color_image, depth_colormap))
+
+        # Show images
+        cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
+        cv2.imshow('RealSense', images)
+        cv2.waitKey(1)
+
+finally:
+
+    # Stop streaming
+    pipeline.stop()
 ```
 For more information on the library, please follow our [examples](./examples), and read the [documentation](./doc) to learn more.
 
